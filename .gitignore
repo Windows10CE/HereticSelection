@@ -1,0 +1,4 @@
+obj/
+Libs/*
+.vs/
+bin/
