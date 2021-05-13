@@ -1,9 +1,10 @@
 {
     "name": "HereticSelection",
-    "version_number": "1.0.0",
+    "version_number": "2.0.0",
     "website_url": "https://github.com/Windows10CE/HereticSelection",
     "description": "Adds the Heretic to the character select (check readme before reporting bugs)",
     "dependencies": [
-        "bbepis-BepInExPack-5.3.1"
+        "bbepis-BepInExPack-5.4.9",
+		"Windows10CE-ModCommon-2.0.1"
     ]
 }

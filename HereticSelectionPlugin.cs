@@ -1,22 +1,23 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Linq;
 using BepInEx;
 using BepInEx.Logging;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
-using MonoMod.RuntimeDetour;
 using HarmonyLib;
+using RoR2.ContentManagement;
 
 namespace HereticSelection
 {
     [BepInPlugin(ModGUID, ModName, ModVer)]
+    [BepInDependency(ModCommon.ModCommonPlugin.ModGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [ModCommon.NetworkModlistInclude]
+    [HarmonyPatch]
     public class HereticSelectionPlugin : BaseUnityPlugin
     {
         public const string ModGUID = "com.Windows10CE.HereticSelection";
         public const string ModName = "HereticSelection";
-        public const string ModVer = "1.0.0";
+        public const string ModVer = "2.0.1";
 
         new internal static ManualLogSource Logger;
 
@@ -24,25 +25,25 @@ namespace HereticSelection
         {
             HereticSelectionPlugin.Logger = base.Logger;
 
-            new Hook(AccessTools.Method(typeof(ContentManager), nameof(ContentManager.SetContentPacks)), AccessTools.Method(typeof(HereticSelectionPlugin), nameof(FixHereticDef)));
-            new Hook(AccessTools.Method(typeof(CharacterMaster), nameof(CharacterMaster.SpawnBody)), AccessTools.Method(typeof(HereticSelectionPlugin), nameof(CharacterMasterBegin)));
+            Harmony.CreateAndPatchAll(typeof(HereticSelectionPlugin).Assembly, ModGUID);
+            ContentManager.onContentPacksAssigned += FixHereticDef;
         }
 
-        internal static void FixHereticDef(Action<List<ContentPack>> orig, List<ContentPack> packs)
+        internal static void FixHereticDef(HG.ReadOnlyArray<ReadOnlyContentPack> packs)
         {
-            orig(packs);
             SurvivorDef bird = ContentManager.survivorDefs.First(x => x.displayNameToken == "HERETIC_BODY_NAME");
             bird.hidden = false;
-            bird.displayPrefab = Resources.Load<GameObject>("Prefabs/CharacterBodies/HereticBody");
+            bird.displayPrefab = Resources.Load<GameObject>("Prefabs/CharacterBodies/HereticBody").transform.Find("ModelBase/mdlHeretic").gameObject;
         }
 
-        internal static CharacterBody CharacterMasterBegin(Func<CharacterMaster, Vector3, Quaternion, CharacterBody> orig, CharacterMaster self, Vector3 pos, Quaternion rot)
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CharacterMaster), nameof(CharacterMaster.SpawnBody))]
+        internal static void CharacterMasterBegin(CharacterMaster __instance, CharacterBody __result)
         {
-            var body = orig(self, pos, rot);
-            if (!NetworkServer.active || !self || !self.inventory || !Run.instance || (Run.instance.stageClearCount != 0 && !RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.randomSurvivorOnRespawnArtifactDef)))
-                return body;
-            if (body.baseNameToken != "HERETIC_BODY_NAME")
-                return body;
+            if (!NetworkServer.active || !__instance || !__instance.inventory || !Run.instance || (Run.instance.stageClearCount != 0 && !RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.randomSurvivorOnRespawnArtifactDef)))
+                return;
+            if (__result.baseNameToken != "HERETIC_BODY_NAME")
+                return;
 
             ItemDef[] requiredItems = new ItemDef[] 
             { 
@@ -53,10 +54,8 @@ namespace HereticSelection
             };
 
             foreach (var item in requiredItems)
-                if (self.inventory.GetItemCount(item) < 1)
-                    self.inventory.GiveItem(item);
-
-            return body;
+                if (__instance.inventory.GetItemCount(item) < 1)
+                    __instance.inventory.GiveItem(item);
         }
     }
 }

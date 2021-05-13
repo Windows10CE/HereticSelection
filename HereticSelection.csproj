@@ -18,12 +18,16 @@
       <HintPath>Libs\BepInEx.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>Libs\Mono.Cecil.dll</HintPath>
+    <Reference Include="HGCSharpUtils">
+      <HintPath>Libs\HGCSharpUtils.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="MonoMod.RuntimeDetour">
-      <HintPath>Libs\MonoMod.RuntimeDetour.dll</HintPath>
+    <Reference Include="ModCommon">
+      <HintPath>Libs\ModCommon.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>Libs\Mono.Cecil.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="MonoMod.Utils">
@@ -34,17 +38,19 @@
       <HintPath>Libs\UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>Libs\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>Libs\UnityEngine.CoreModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.JSONSerializeModule">
-      <HintPath>Libs\UnityEngine.JSONSerializeModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.Networking">
       <HintPath>Libs\UnityEngine.Networking.dll</HintPath>
       <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>Libs\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 
